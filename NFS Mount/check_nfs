@@ -1,0 +1,39 @@
+#!/bin/sh
+# 
+# NFS Mount
+# Luiz Sales
+# luiz@lsales.biz
+
+INTER=$2
+
+lld() {
+echo "{ \"data\":["
+nfsa=$(cat /etc/fstab | grep nfs | awk '{print $2}')
+for x in `echo $nfsa`
+do
+	echo "{ \"{#NFS_NAME}\":\"$x\" },"
+done
+echo "] }"
+	
+}
+
+
+
+get() {
+
+nfs=$(df -T | grep nfs | awk '{print $6}' | grep $INTER | wc -l)
+if [ $nfs -eq "0" ]; then
+	echo "0"
+elif [ $nfs -eq "1" ]; then
+	echo "1"
+fi
+}
+
+case $1 in
+	lld) lld |  sed ':a;$!{N;ba;};s/\(.*\)},/\1}/'
+	;;
+	get) get
+	;;
+	*) echo "lld - get"
+	;;
+esac
